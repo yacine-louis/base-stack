@@ -7,8 +7,8 @@ import {
   ScrollRestoration,
 } from "react-router";
 
-import appleTouchIconAssetUrl from "./assets/favicons/apple-touch-icon.png";
-import faviconAssetUrl from "./assets/favicons/favicon.svg";
+// import appleTouchIconAssetUrl from "./apple-touch-icon.png";
+// import faviconAssetUrl from "./favicon.svg?url&no-inline";
 
 import type { Route } from "./+types/root";
 import "./app.css";
@@ -16,8 +16,8 @@ import "./app.css";
 export const links: Route.LinksFunction = () => [
   // handling favicon
   { rel: "icon", href: "/favicon.ico", sizes: "32x32" },
-  { rel: "icon", type: "image/svg+xml", href: faviconAssetUrl },
-  { rel: "apple-touch-icon", href: appleTouchIconAssetUrl },
+  { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
+  { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
   { rel: "manifest", href: "/manifest.webmanifest" },
 
   // google fonts
