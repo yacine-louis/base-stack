@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import React, { useState } from "react";
 import { iconNames } from "~/types/icons";
-import { Icon, type IconProps } from "~/components/Icon";
+import { Icon, type IconProps, IconSize } from "~/components/Icon";
 
 // Icon Library part
 // Allows you to copy an icon with a toast notification, modify the code to fit your needs
@@ -33,7 +33,7 @@ const ClickableIcon = ({ name, size, ...props }: IconProps) => {
           size={size}
           onClick={copyIcon}
         />
-        <p>{size}</p>
+        <p>{IconSize[size ?? "default"]} px</p>
       </div>
     </>
   );
@@ -41,25 +41,25 @@ const ClickableIcon = ({ name, size, ...props }: IconProps) => {
 
 const IconLibrary = () => {
   const [iconClasses, setIconClasses] = useState("");
+
   return (
     <div className="flex flex-col gap-4 p-2">
-      <div className="flex items-center justify-end gap-2">
+      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-end">
         <label className="text-white">Icon classes:</label>
         <input
           placeholder="Optional classes to apply to icons"
-          className="  w-full rounded-md text-gray-800! bg-gray-100 p-2! dark:bg-gray-800 dark:text-gray-100! md:w-1/2 xl:w-1/3"
+          className="w-full rounded-md bg-gray-100 p-2! text-gray-800! dark:bg-gray-800 dark:text-gray-100! md:w-1/2 xl:w-1/3"
           value={iconClasses}
           onChange={(e) => setIconClasses(e.target.value)}
         />
       </div>
-      <div className="grid grid-cols-4 place-items-center justify-items-stretch gap-4 rounded-md border! border-gray-600! p-2 md:grid-cols-6 xl:grid-cols-8">
+
+      <div className="flex flex-col gap-4 rounded-md border! border-gray-600! p-2">
         {iconNames.map((key) => {
           return (
-            <div
-              key={key}
-              className="inline-flex flex-col items-center justify-center overflow-hidden"
-            >
-              <div className="mb-2 w-full truncate text-center">{key}</div>
+            <div key={key} className="flex items-center gap-4 overflow-hidden">
+              <div className="w-32 truncate text-right">{key}</div>
+
               <div className="flex items-center gap-2">
                 <ClickableIcon className={iconClasses} size="sm" name={key} />
                 <ClickableIcon className={iconClasses} size="md" name={key} />
@@ -73,7 +73,6 @@ const IconLibrary = () => {
     </div>
   );
 };
-
 // Export plugin as a function that returns TanStack plugin configuration
 export const iconLibraryPlugin = {
   name: "Icon Library",

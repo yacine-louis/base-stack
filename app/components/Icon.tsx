@@ -9,6 +9,7 @@ export enum IconSize {
   md = "24",
   lg = "32",
   xl = "40",
+  default = "16",
 }
 
 export type IconSizes = keyof typeof IconSize;
