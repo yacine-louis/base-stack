@@ -3,5 +3,7 @@
 /node_modules/
 
 # React Router
-/.react-router/
 /build/
+
+# generated files
+/.react-router/
