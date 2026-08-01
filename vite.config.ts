@@ -7,13 +7,16 @@ import { reactRouterDevTools } from "react-router-devtools";
 export default defineConfig({
   plugins: [
     reactRouterDevTools({
-      pluginDir: "./plugins",
+      pluginDir: "./devtools/plugins",
+      server: {
+        silent: false,
+      },
     }),
     tailwindcss(),
     reactRouter(),
     iconsSpritesheet({
       withTypes: true,
-      inputDir: "icons",
+      inputDir: "app/assets/icons",
       outputDir: "public/icons",
       // generated types
       typesOutputFile: "app/types/icons.ts",
