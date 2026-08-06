@@ -7,3 +7,4 @@
 
 # generated files
 /.react-router/
+/generated/prisma
