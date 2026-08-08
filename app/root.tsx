@@ -1,15 +1,23 @@
 import {
+  href,
   isRouteErrorResponse,
+  Link,
   Links,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
+  useRouteLoaderData,
 } from "react-router";
 
 import type { Route } from "./+types/root";
 import "./styles/app.css";
 import fontStyleSheetUrl from "./styles/font.css?url&no-inline";
+import React from "react";
+
+export function loader({}: Route.LoaderArgs) {
+  return null;
+}
 
 export const links: Route.LinksFunction = () => [
   // handling favicon
@@ -44,7 +52,23 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <div>
+      <nav className="w-full bg-amber-100">
+        <ul className="mx-auto flex max-w-250 items-center justify-between px-4 py-4">
+          <li>
+            <Link to={href("/")}>Home</Link>
+          </li>
+          <li>
+            <Link prefetch="viewport" to={href("/users")}>
+              users
+            </Link>
+          </li>
+        </ul>
+      </nav>
+      <Outlet />
+    </div>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
