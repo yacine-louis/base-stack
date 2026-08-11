@@ -22,6 +22,7 @@ export async function loader({ params }: Route.LoaderArgs) {
       username,
     },
   });
+
   return { data };
 }
 
