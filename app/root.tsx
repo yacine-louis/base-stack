@@ -60,7 +60,7 @@ export default function App() {
             <Link to={href("/")}>Home</Link>
           </li>
           <li>
-            <Link prefetch="viewport" to={href("/users")}>
+            <Link prefetch="render" to={href("/users")}>
               users
             </Link>
           </li>
