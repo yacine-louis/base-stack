@@ -1,6 +1,14 @@
 import { prisma } from "@db/prisma";
 import type { Route } from "./+types/users_.$username";
-import { isRouteErrorResponse, Outlet } from "react-router";
+import {
+  href,
+  isRouteErrorResponse,
+  Link,
+  Outlet,
+  useParams,
+} from "react-router";
+import { GeneralErrorBoundary } from "~/components/GeneralErrorBoundary";
+import { invariantResponse } from "~/utils/misc";
 
 export async function loader({ params }: Route.LoaderArgs) {
   const { username } = params;
@@ -15,9 +23,9 @@ export async function loader({ params }: Route.LoaderArgs) {
       username,
     },
   });
-  if (!user) {
-    throw new Response("user not found", { status: 404 });
-  }
+
+  invariantResponse(user, "user not found", { status: 404 });
+
   return user;
 }
 
@@ -27,36 +35,25 @@ export default function RouteComponent({ loaderData }: Route.ComponentProps) {
     <>
       <p>{id}</p>
       <p>{username}</p>
+
+      <Link
+        className="text-blue-500 underline"
+        to={href("/users/:username/notes", { username: username })}
+        prefetch="render"
+      >
+        Go to Notes
+      </Link>
       <Outlet />
     </>
   );
 }
 
-export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = "Oops!";
-  let details = "An unexpected error occurred.";
-  let stack: string | undefined;
-
-  if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? "404" : "Error";
-    details =
-      error.status === 404
-        ? "The requested page could not be found."
-        : error.statusText || details;
-  } else if (import.meta.env.DEV && error && error instanceof Error) {
-    details = error.message;
-    stack = error.stack;
-  }
-
+export function ErrorBoundary({ params }: Route.ErrorBoundaryProps) {
   return (
-    <main className="pt-16 p-4 container mx-auto">
-      <h1>{message}</h1>
-      <p>{details}</p>
-      {stack && (
-        <pre className="w-full p-4 overflow-x-auto">
-          <code>{stack}</code>
-        </pre>
-      )}
-    </main>
+    <GeneralErrorBoundary
+      statusHandlers={{
+        404: () => <p>No user with the username "{params.username}" exists</p>,
+      }}
+    />
   );
 }

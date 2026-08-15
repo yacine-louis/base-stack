@@ -41,10 +41,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         {/* this is for react-scan */}
-        <script
+        {/* <script
           crossOrigin="anonymous"
           src="//unpkg.com/react-scan/dist/auto.global.js"
-        />
+        /> */}
         <Links />
       </head>
       <body>
@@ -59,9 +59,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <div>
-      <nav className="w-full bg-amber-100">
+      <nav className="bg-muted w-full">
         <ul className="mx-auto flex max-w-250 items-center justify-between px-4 py-4">
-          <li>
+          <li className="text-muted-foreground">
             <Link to={href("/")}>Home</Link>
           </li>
           <li>
@@ -93,11 +93,11 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   }
 
   return (
-    <main className="pt-16 p-4 container mx-auto">
+    <main className="container mx-auto p-4 pt-16">
       <h1>{message}</h1>
       <p>{details}</p>
       {stack && (
-        <pre className="w-full p-4 overflow-x-auto">
+        <pre className="w-full overflow-x-auto p-4">
           <code>{stack}</code>
         </pre>
       )}

@@ -1,7 +1,7 @@
 import spriteHref from "/icons/sprite.svg?url";
 import type { SVGProps } from "react";
 import type { IconName } from "../types/icons.ts";
-import { cn } from "~/utils/css";
+import { cn } from "~/utils/misc";
 
 export enum IconSize {
   xs = "12",

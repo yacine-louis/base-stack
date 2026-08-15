@@ -1,7 +1,7 @@
-import clsx from "clsx";
 import React, { useState } from "react";
 import { iconNames } from "~/types/icons";
 import { Icon, type IconProps, IconSize } from "~/components/Icon";
+import { cn } from "~/utils/misc";
 
 // Icon Library part
 // Allows you to copy an icon with a toast notification, modify the code to fit your needs
@@ -24,7 +24,7 @@ const ClickableIcon = ({ name, size, ...props }: IconProps) => {
     <>
       <div className="flex flex-col items-center">
         <Icon
-          className={clsx(
+          className={cn(
             props.className,
             clicked ? "text-green-500" : "hover:cursor-pointer",
           )}
@@ -48,7 +48,7 @@ const IconLibrary = () => {
         <label className="text-white">Icon classes:</label>
         <input
           placeholder="Optional classes to apply to icons"
-          className="w-full rounded-md bg-gray-100 p-2! text-gray-800! dark:bg-gray-800 dark:text-gray-100! md:w-1/2 xl:w-1/3"
+          className="w-full rounded-md bg-gray-100 p-2! text-gray-800! md:w-1/2 xl:w-1/3 dark:bg-gray-800 dark:text-gray-100!"
           value={iconClasses}
           onChange={(e) => setIconClasses(e.target.value)}
         />
