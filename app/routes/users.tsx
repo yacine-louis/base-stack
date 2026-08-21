@@ -1,9 +1,9 @@
-import { href, Link, Outlet } from "react-router";
+import { href, Link } from "react-router";
 import type { Route } from "./+types/users";
 import { prisma } from "@db/prisma";
 import { GeneralErrorBoundary } from "~/components/GeneralErrorBoundary";
 
-export async function loader({ request }: Route.LoaderArgs) {
+export async function loader() {
   const users = await prisma.user.findMany({
     select: {
       id: true,
@@ -34,6 +34,6 @@ export default function RouteComponent({ loaderData }: Route.ComponentProps) {
   );
 }
 
-export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
+export function ErrorBoundary() {
   return <GeneralErrorBoundary />;
 }

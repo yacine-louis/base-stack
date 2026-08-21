@@ -34,7 +34,7 @@ export default function RouteComponent({ loaderData }: Route.ComponentProps) {
   const { data } = loaderData;
   return (
     <>
-      <div className="flex min-h-screen">
+      <div className="flex">
         <aside className="w-64 shrink-0 border-r border-gray-200 p-4">
           <h2 className="mb-3 text-sm font-semibold text-gray-500">Notes</h2>
 
@@ -47,10 +47,11 @@ export default function RouteComponent({ loaderData }: Route.ComponentProps) {
                   cn(
                     "rounded-md px-3 py-2 text-sm",
                     isActive
-                      ? "bg-gray-100 text-gray-900"
+                      ? "bg-blue-500 text-gray-900"
                       : "text-gray-700 hover:bg-gray-100",
                   )
                 }
+                preventScrollReset
               >
                 {note.title}
               </NavLink>

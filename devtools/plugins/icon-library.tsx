@@ -61,7 +61,11 @@ const IconLibrary = () => {
               <div className="w-32 truncate text-right">{key}</div>
 
               <div className="flex items-center gap-2">
-                <ClickableIcon className={iconClasses} size="sm" name={key} />
+                <ClickableIcon
+                  className={iconClasses}
+                  size="default"
+                  name={key}
+                />
                 <ClickableIcon className={iconClasses} size="md" name={key} />
                 <ClickableIcon className={iconClasses} size="lg" name={key} />
                 <ClickableIcon className={iconClasses} size="xl" name={key} />

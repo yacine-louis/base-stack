@@ -1,12 +1,6 @@
 import { prisma } from "@db/prisma";
 import type { Route } from "./+types/users_.$username";
-import {
-  href,
-  isRouteErrorResponse,
-  Link,
-  Outlet,
-  useParams,
-} from "react-router";
+import { href, Link, Outlet } from "react-router";
 import { GeneralErrorBoundary } from "~/components/GeneralErrorBoundary";
 import { invariantResponse } from "~/utils/misc";
 
@@ -39,7 +33,6 @@ export default function RouteComponent({ loaderData }: Route.ComponentProps) {
       <Link
         className="text-blue-500 underline"
         to={href("/users/:username/notes", { username: username })}
-        prefetch="render"
       >
         Go to Notes
       </Link>

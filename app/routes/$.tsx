@@ -1,5 +1,4 @@
 import { data, Link, useLocation } from "react-router";
-import type { Route } from "./+types/$";
 import { GeneralErrorBoundary } from "~/components/GeneralErrorBoundary";
 export async function loader() {
   throw data(null, { status: 404 });
@@ -9,7 +8,7 @@ export async function action() {
   throw data(null, { status: 404 });
 }
 
-export default function NotFound({}: Route.ComponentProps) {
+export default function NotFound() {
   return <ErrorBoundary />;
 }
 

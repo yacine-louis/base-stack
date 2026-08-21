@@ -7,17 +7,12 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useRouteLoaderData,
 } from "react-router";
 
 import type { Route } from "./+types/root";
 import "./styles/app.css";
 import fontStyleSheetUrl from "./styles/font.css?url&no-inline";
 import React from "react";
-
-export function loader({}: Route.LoaderArgs) {
-  return null;
-}
 
 export const links: Route.LinksFunction = () => [
   // handling favicon
@@ -65,9 +60,7 @@ export default function App() {
             <Link to={href("/")}>Home</Link>
           </li>
           <li>
-            <Link prefetch="render" to={href("/users")}>
-              users
-            </Link>
+            <Link to={href("/users")}>users</Link>
           </li>
         </ul>
       </nav>

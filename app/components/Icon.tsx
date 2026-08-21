@@ -5,11 +5,10 @@ import { cn } from "~/utils/misc";
 
 export enum IconSize {
   xs = "12",
-  sm = "16",
+  default = "16",
   md = "24",
   lg = "32",
   xl = "40",
-  default = "16",
 }
 
 export type IconSizes = keyof typeof IconSize;
@@ -29,7 +28,7 @@ export const Icon = ({
   name,
   testId,
   className,
-  size = "md",
+  size = "default",
   ...props
 }: IconProps) => {
   const iconSize = IconSize[size];
