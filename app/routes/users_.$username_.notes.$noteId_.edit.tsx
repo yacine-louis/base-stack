@@ -11,9 +11,23 @@ import {
   useNavigation,
 } from "react-router";
 import { GeneralErrorBoundary } from "~/components/GeneralErrorBoundary";
-import { useHydrated } from "~/hooks/useHydrated";
 import { ErrorList } from "~/components/ErrorList";
-import { useEffect, useRef } from "react";
+import z from "zod";
+import { parseWithZod } from "@conform-to/zod/v4";
+import {
+  getFormProps,
+  getInputProps,
+  getTextareaProps,
+  useForm,
+} from "@conform-to/react";
+
+const titleMaxLength = 100;
+const contentMaxLength = 1000;
+
+const NoteEditorSchema = z.object({
+  title: z.string().min(1).max(titleMaxLength),
+  content: z.string().min(1).max(contentMaxLength),
+});
 
 export async function loader({ params }: Route.LoaderArgs) {
   const note = await prisma.note.findFirst({
@@ -34,59 +48,21 @@ export async function loader({ params }: Route.LoaderArgs) {
   return { note };
 }
 
-type FormErrors<T extends string> = {
-  formErrors: string[];
-  fieldErrors: Record<T, string[]>;
-};
-
-const titleMaxLength = 100;
-const contentMaxLength = 1000;
-
 export async function action({ request, params }: Route.ActionArgs) {
   const formData = await request.formData();
-  const title = formData.get("title");
-  const content = formData.get("content");
 
-  invariantResponse(typeof title === "string", "Title must be string", {
-    status: 400,
-  });
-  invariantResponse(typeof content === "string", "Content must be string", {
-    status: 400,
-  });
+  const submission = parseWithZod(formData, { schema: NoteEditorSchema });
 
-  const errors: FormErrors<"title" | "content"> = {
-    formErrors: [],
-    fieldErrors: {
-      title: [],
-      content: [],
-    },
-  };
-
-  if (title === "") {
-    errors.fieldErrors.title.push("Title is required");
-  }
-  if (title.length > titleMaxLength) {
-    errors.fieldErrors.title.push(
-      `Title must be ${titleMaxLength} characters of less`,
-    );
-  }
-  if (content === "") {
-    errors.fieldErrors.content.push("Content is required");
-  }
-  if (content.length > contentMaxLength) {
-    errors.fieldErrors.content.push(
-      `Content must be ${contentMaxLength} characters of less`,
+  if (submission.status !== "success") {
+    return data(
+      { result: submission.reply() },
+      {
+        status: submission.status === "error" ? 400 : 200,
+      },
     );
   }
 
-  const hasErrors =
-    errors.formErrors.length > 0 ||
-    Object.values(errors.fieldErrors).some(
-      (fieldErrors) => fieldErrors.length > 0,
-    );
-  if (hasErrors) {
-    return data({ status: "error", errors } as const, 400);
-  }
+  const { title, content } = submission.value;
 
   const updatedNote = await prisma.note.update({
     data: { title, content },
@@ -115,84 +91,59 @@ export default function RouteComponent({
   const isSubmitting =
     navigation.state === "submitting" && navigation.formAction === formAction;
 
-  const formRef = useRef<HTMLFormElement>(null);
+  const [form, fields] = useForm({
+    id: "note-editor",
+    // last submittion
+    lastResult: actionData?.result,
+    // client side validation
+    onValidate({ formData }) {
+      return parseWithZod(formData, { schema: NoteEditorSchema });
+    },
+    shouldValidate: "onBlur",
+    defaultValue: {
+      title: note.title,
+      content: note.content,
+    },
+  });
 
-  useEffect(() => {
-    const formEl = formRef.current;
-    if (!formEl) return;
-    if (actionData?.status !== "error") return;
-
-    if (formEl.matches('[aria-invalid="true"]')) {
-      formEl.focus();
-    } else {
-      const firstInvalidField = formEl.querySelector('[aria-invalid="true"]');
-      if (firstInvalidField instanceof HTMLElement) {
-        firstInvalidField.focus();
-      }
-    }
-  }, [actionData]);
-
-  const formErrors = actionData?.errors.formErrors;
-  const fieldErrors = actionData?.errors.fieldErrors;
-
-  // form errors
-  const formHasErrors = Boolean(formErrors?.length);
-  const formErrorId = formHasErrors ? "form-error" : undefined;
-  const titleHasErrors = Boolean(fieldErrors?.title.length);
-  const titleErrorId = titleHasErrors ? "title-error" : undefined;
-  const contentHasErrors = Boolean(fieldErrors?.content.length);
-  const contentErrorId = contentHasErrors ? "content-error" : undefined;
-
-  const isHydrated = useHydrated();
   return (
     <>
       <Form
         method="POST"
         className="flex flex-col gap-4"
-        noValidate={isHydrated}
-        aria-invalid={formHasErrors || undefined}
-        aria-describedby={formErrorId}
-        ref={formRef}
-        tabIndex={-1}
+        {...getFormProps(form)}
       >
-        <label className="flex flex-col gap-1">
-          <span className="font-medium">Title</span>
-          <input
-            name="title"
-            type="text"
-            defaultValue={note.title}
-            className="rounded-md border px-3 py-2"
-            maxLength={titleMaxLength}
-            required
-            aria-invalid={titleHasErrors || undefined}
-            aria-describedby={titleErrorId}
-            autoFocus
-          />
+        <label
+          htmlFor={fields.title.id}
+          className="flex flex-col gap-1 font-medium"
+        >
+          Title
         </label>
+        <input {...getInputProps(fields.title, { type: "text" })} autoFocus />
+
         <div className="min-h-6">
-          <ErrorList id={titleErrorId} errors={fieldErrors?.title} />
+          <ErrorList id={fields.title.errorId} errors={fields.title.errors} />
         </div>
 
-        <label className="flex flex-col gap-1">
-          <span className="font-medium">Content</span>
-          <textarea
-            name="content"
-            defaultValue={note.content}
-            className="min-h-40 resize-none rounded-md border px-3 py-2"
-            maxLength={contentMaxLength}
-            required
-            aria-invalid={contentHasErrors || undefined}
-            aria-describedby={contentErrorId}
-          />
+        <label
+          htmlFor={fields.content.id}
+          className="flex flex-col gap-1 font-medium"
+        >
+          Content
         </label>
+        <textarea
+          className="min-h-40 resize-none rounded-md border px-3 py-2"
+          {...getTextareaProps(fields.content)}
+        />
         <div className="min-h-6">
-          <ErrorList id={contentErrorId} errors={fieldErrors?.content} />
+          <ErrorList
+            id={fields.content.errorId}
+            errors={fields.content.errors}
+          />
         </div>
-
         <div className="min-h-6">
-          <ErrorList id={formErrorId} errors={formErrors} />
+          <ErrorList id={form.errorId} errors={form.errors} />
         </div>
-
         <div className="flex gap-2">
           <button
             type="reset"
