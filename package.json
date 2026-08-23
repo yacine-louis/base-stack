@@ -12,6 +12,8 @@
     "lint:fix": "oxlint --fix"
   },
   "dependencies": {
+    "@conform-to/react": "^1.21.1",
+    "@conform-to/zod": "^1.21.1",
     "@prisma/adapter-mariadb": "^7.9.1",
     "@prisma/client": "^7.9.1",
     "@react-router/fs-routes": "^8.3.0",
