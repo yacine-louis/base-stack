@@ -20,6 +20,7 @@ import {
   getTextareaProps,
   useForm,
 } from "@conform-to/react";
+import { getConstraints } from "@conform-to/zod/v4/future";
 import { useHydrated } from "~/hooks/useHydrated";
 
 const titleMaxLength = 100;
@@ -95,6 +96,8 @@ export default function RouteComponent({
   const isHydrated = useHydrated();
   const [form, fields] = useForm({
     id: "note-editor",
+    // add constraints to form fields
+    constraint: getConstraints(NoteEditorSchema),
     // last submittion
     lastResult: actionData?.result,
     // client side validation
