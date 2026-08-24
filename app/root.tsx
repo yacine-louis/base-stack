@@ -36,10 +36,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         {/* this is for react-scan */}
-        {/* <script
+        <script
           crossOrigin="anonymous"
+          defer
           src="//unpkg.com/react-scan/dist/auto.global.js"
-        /> */}
+        />
         <Links />
       </head>
       <body>

@@ -11,8 +11,8 @@ export function ErrorList({
 } & React.ComponentPropsWithoutRef<"li">) {
   return (
     <ul id={id}>
-      {errors?.map((error, index) => (
-        <li key={index} className={cn("text-red-500", className)} {...props}>
+      {errors?.map((error) => (
+        <li key={error} className={cn("text-red-500", className)} {...props}>
           {error}
         </li>
       ))}

@@ -20,6 +20,7 @@ import {
   getTextareaProps,
   useForm,
 } from "@conform-to/react";
+import { useHydrated } from "~/hooks/useHydrated";
 
 const titleMaxLength = 100;
 const contentMaxLength = 1000;
@@ -64,12 +65,12 @@ export async function action({ request, params }: Route.ActionArgs) {
 
   const { title, content } = submission.value;
 
-  const updatedNote = await prisma.note.update({
+  await prisma.note.update({
     data: { title, content },
     where: { id: params.noteId },
   });
 
-  invariantResponse(updatedNote, "Note not found", { status: 404 });
+  // invariantResponse(updatedNote, "Note not found", { status: 404 });
 
   return redirect(
     href("/users/:username/notes/:noteId", {
@@ -91,6 +92,7 @@ export default function RouteComponent({
   const isSubmitting =
     navigation.state === "submitting" && navigation.formAction === formAction;
 
+  const isHydrated = useHydrated();
   const [form, fields] = useForm({
     id: "note-editor",
     // last submittion
@@ -104,6 +106,7 @@ export default function RouteComponent({
       title: note.title,
       content: note.content,
     },
+    defaultNoValidate: isHydrated,
   });
 
   return (
@@ -119,7 +122,7 @@ export default function RouteComponent({
         >
           Title
         </label>
-        <input {...getInputProps(fields.title, { type: "text" })} autoFocus />
+        <input {...getInputProps(fields.title, { type: "text" })} />
 
         <div className="min-h-6">
           <ErrorList id={fields.title.errorId} errors={fields.title.errors} />
