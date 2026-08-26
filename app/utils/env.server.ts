@@ -9,6 +9,7 @@ const envSchema = z.object({
   DATABASE_NAME: z.string().trim().min(1),
   DATABASE_HOST: z.string().trim().min(1),
   DATABASE_PORT: z.string().trim().min(1),
+  ENABLE_REACT_ROUTER_DEVTOOLS: z.enum(["true", "false"]),
 });
 
 declare global {

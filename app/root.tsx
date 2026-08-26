@@ -7,13 +7,16 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useMatches,
+  useRevalidator,
+  type EntryContext,
 } from "react-router";
 
 import type { Route } from "./+types/root";
 import "./styles/app.css";
 import fontStyleSheetUrl from "./styles/font.css?url&no-inline";
 import React from "react";
-
+import { useRefetchOnWindowFocus } from "./hooks/useRefetchOnWindowFocus";
 export const links: Route.LinksFunction = () => [
   // handling favicon
   { rel: "icon", type: "image/x-icon", href: "/favicon.ico", sizes: "32x32" },
@@ -35,11 +38,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
-        {/* this is for react-scan */}
         <script
           crossOrigin="anonymous"
-          defer
-          src="//unpkg.com/react-scan/dist/auto.global.js"
+          src="https://unpkg.com/react-scan/dist/auto.global.js"
         />
         <Links />
       </head>
@@ -52,7 +53,34 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+/* __refetch on window focus__ */
+declare global {
+  interface Window {
+    __reactRouterManifest: EntryContext["manifest"] | undefined;
+  }
+}
+/* __refetch on window focus__ */
+
 export default function App() {
+  /* __refetch on window focus__ */
+  const matches = useMatches();
+  const revalidator = useRevalidator();
+
+  useRefetchOnWindowFocus(() => {
+    const manifestRoutes = window.__reactRouterManifest?.routes;
+    if (!manifestRoutes) return;
+
+    const anyMatchHasLoader = matches.some((m) => {
+      const routeInfo = manifestRoutes[m.id];
+      return Boolean(routeInfo?.hasLoader || routeInfo?.hasClientLoader);
+    });
+
+    if (anyMatchHasLoader) {
+      revalidator.revalidate();
+    }
+  });
+  /* __refetch on window focus__ */
+
   return (
     <div>
       <nav className="bg-muted w-full">

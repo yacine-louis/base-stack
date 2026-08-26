@@ -11,14 +11,20 @@ type StatusHandler = (info: {
   params: Record<string, string | undefined>;
 }) => ReactElement | null;
 
+const defaultStatusHandler: StatusHandler = ({ error }) => (
+  <p>
+    {error.status} {error.data}
+  </p>
+);
+
+const defaultUnexpectedErrorHandler = (error: unknown) => (
+  <p>{getErrorMessage(error)}</p>
+);
+
 export function GeneralErrorBoundary({
-  defaultStatusHandler = ({ error }) => (
-    <p>
-      {error.status} {error.data}
-    </p>
-  ),
+  defaultStatusHandler: statusHandler,
   statusHandlers,
-  unexpectedErrorHandler = (error) => <p>{getErrorMessage(error)}</p>,
+  unexpectedErrorHandler,
 }: {
   defaultStatusHandler?: StatusHandler;
   statusHandlers?: Record<number, StatusHandler>;
@@ -27,6 +33,9 @@ export function GeneralErrorBoundary({
   const error = useRouteError();
   const params = useParams();
   const isResponse = isRouteErrorResponse(error);
+  const resolvedStatusHandler = statusHandler ?? defaultStatusHandler;
+  const resolvedUnexpectedErrorHandler =
+    unexpectedErrorHandler ?? defaultUnexpectedErrorHandler;
 
   if (typeof document !== "undefined") {
     console.error(error);
@@ -35,11 +44,11 @@ export function GeneralErrorBoundary({
   return (
     <div className="container flex items-center justify-center p-20 text-2xl">
       {isResponse
-        ? (statusHandlers?.[error.status] ?? defaultStatusHandler)({
+        ? (statusHandlers?.[error.status] ?? resolvedStatusHandler)({
             error,
             params,
           })
-        : unexpectedErrorHandler(error)}
+        : resolvedUnexpectedErrorHandler(error)}
     </div>
   );
 }

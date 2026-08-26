@@ -5,7 +5,8 @@
     "correctness": "error"
   },
   "rules": {
-    "no-unused-vars": "warn"
+    "no-unused-vars": "warn",
+    "react/rules-of-hooks": "error"
   },
   "env": {
     "builtin": true

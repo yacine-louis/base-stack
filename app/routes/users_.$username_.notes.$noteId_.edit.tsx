@@ -8,6 +8,7 @@ import {
   Link,
   redirect,
   useFormAction,
+  useNavigate,
   useNavigation,
 } from "react-router";
 import { GeneralErrorBoundary } from "~/components/GeneralErrorBoundary";
@@ -27,7 +28,7 @@ const titleMaxLength = 100;
 const contentMaxLength = 1000;
 
 const NoteEditorSchema = z.object({
-  title: z.string().min(1).max(titleMaxLength),
+  title: z.string({ error: "Invalid type" }).min(1).max(titleMaxLength),
   content: z.string().min(1).max(contentMaxLength),
 });
 
@@ -71,8 +72,6 @@ export async function action({ request, params }: Route.ActionArgs) {
     where: { id: params.noteId },
   });
 
-  // invariantResponse(updatedNote, "Note not found", { status: 404 });
-
   return redirect(
     href("/users/:username/notes/:noteId", {
       username: params.username,
@@ -94,22 +93,43 @@ export default function RouteComponent({
     navigation.state === "submitting" && navigation.formAction === formAction;
 
   const isHydrated = useHydrated();
+  const navigate = useNavigate();
+
   const [form, fields] = useForm({
-    id: "note-editor",
+    id: "edit-note-form",
+    defaultNoValidate: isHydrated,
+
     // add constraints to form fields
     constraint: getConstraints(NoteEditorSchema),
     // last submittion
     lastResult: actionData?.result,
-    // client side validation
-    onValidate({ formData }) {
-      return parseWithZod(formData, { schema: NoteEditorSchema });
-    },
-    shouldValidate: "onBlur",
     defaultValue: {
       title: note.title,
       content: note.content,
     },
-    defaultNoValidate: isHydrated,
+    shouldValidate: "onBlur",
+    // client side validation
+    onValidate({ formData }) {
+      return parseWithZod(formData, { schema: NoteEditorSchema });
+    },
+    onSubmit(event, { formData }) {
+      const currentValues = {
+        title: formData.get("title"),
+        content: formData.get("content"),
+      };
+
+      const unchanged =
+        currentValues.title === note.title &&
+        currentValues.content === note.content;
+      if (unchanged) {
+        event.preventDefault();
+        navigate(
+          href("/users/:username/notes", {
+            username: params.username,
+          }),
+        );
+      }
+    },
   });
 
   return (
@@ -128,7 +148,10 @@ export default function RouteComponent({
         <input {...getInputProps(fields.title, { type: "text" })} />
 
         <div className="min-h-6">
-          <ErrorList id={fields.title.errorId} errors={fields.title.errors} />
+          <ErrorList
+            errorId={fields.title.errorId}
+            errors={fields.title.errors}
+          />
         </div>
 
         <label
@@ -143,12 +166,12 @@ export default function RouteComponent({
         />
         <div className="min-h-6">
           <ErrorList
-            id={fields.content.errorId}
+            errorId={fields.content.errorId}
             errors={fields.content.errors}
           />
         </div>
         <div className="min-h-6">
-          <ErrorList id={form.errorId} errors={form.errors} />
+          <ErrorList errorId={form.errorId} errors={form.errors} />
         </div>
         <div className="flex gap-2">
           <button
