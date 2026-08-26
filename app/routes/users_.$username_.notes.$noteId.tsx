@@ -1,6 +1,6 @@
 import { prisma } from "@db/prisma";
 import type { Route } from "./+types/users_.$username_.notes.$noteId";
-import { GeneralErrorBoundary } from "~/components/GeneralErrorBoundary";
+import { GeneralErrorBoundary } from "~/components/errors";
 import { invariantResponse } from "~/utils/misc";
 import { Form, href, Link, redirect, useNavigation } from "react-router";
 
@@ -91,10 +91,11 @@ export default function RouteComponent({
   );
 }
 
-export function ErrorBoundary({ params }: Route.ErrorBoundaryProps) {
+export function ErrorBoundary({ error, params }: Route.ErrorBoundaryProps) {
   return (
     <GeneralErrorBoundary
-      statusHandlers={{
+      error={error}
+      handlers={{
         404: () => <p>No notes with "{params.noteId}" exists</p>,
       }}
     />

@@ -1,7 +1,7 @@
 import { href, Link } from "react-router";
 import type { Route } from "./+types/users";
 import { prisma } from "@db/prisma";
-import { GeneralErrorBoundary } from "~/components/GeneralErrorBoundary";
+import { GeneralErrorBoundary } from "~/components/errors";
 
 export async function loader() {
   const users = await prisma.user.findMany({
@@ -34,6 +34,6 @@ export default function RouteComponent({ loaderData }: Route.ComponentProps) {
   );
 }
 
-export function ErrorBoundary() {
-  return <GeneralErrorBoundary />;
+export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
+  return <GeneralErrorBoundary error={error} />;
 }

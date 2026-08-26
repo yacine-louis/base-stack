@@ -1,7 +1,7 @@
 import { prisma } from "@db/prisma";
 import type { Route } from "./+types/users_.$username_.notes";
 import { NavLink, Outlet } from "react-router";
-import { GeneralErrorBoundary } from "~/components/GeneralErrorBoundary";
+import { GeneralErrorBoundary } from "~/components/errors";
 import { cn, invariantResponse } from "~/utils/misc";
 
 export async function loader({ params }: Route.LoaderArgs) {
@@ -67,10 +67,11 @@ export default function RouteComponent({ loaderData }: Route.ComponentProps) {
   );
 }
 
-export function ErrorBoundary({ params }: Route.ErrorBoundaryProps) {
+export function ErrorBoundary({ error, params }: Route.ErrorBoundaryProps) {
   return (
     <GeneralErrorBoundary
-      statusHandlers={{
+      error={error}
+      handlers={{
         404: () => <p>No notes with the username "{params.username}" exists</p>,
       }}
     />

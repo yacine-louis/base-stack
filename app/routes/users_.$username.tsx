@@ -1,7 +1,7 @@
 import { prisma } from "@db/prisma";
 import type { Route } from "./+types/users_.$username";
 import { href, Link, Outlet } from "react-router";
-import { GeneralErrorBoundary } from "~/components/GeneralErrorBoundary";
+import { GeneralErrorBoundary } from "~/components/errors";
 import { invariantResponse } from "~/utils/misc";
 
 export async function loader({ params }: Route.LoaderArgs) {
@@ -41,10 +41,11 @@ export default function RouteComponent({ loaderData }: Route.ComponentProps) {
   );
 }
 
-export function ErrorBoundary({ params }: Route.ErrorBoundaryProps) {
+export function ErrorBoundary({ error, params }: Route.ErrorBoundaryProps) {
   return (
     <GeneralErrorBoundary
-      statusHandlers={{
+      error={error}
+      handlers={{
         404: () => <p>No user with the username "{params.username}" exists</p>,
       }}
     />

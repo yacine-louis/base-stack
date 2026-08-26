@@ -11,7 +11,7 @@ import {
   useNavigate,
   useNavigation,
 } from "react-router";
-import { GeneralErrorBoundary } from "~/components/GeneralErrorBoundary";
+import { GeneralErrorBoundary } from "~/components/errors";
 import { ErrorList } from "~/components/ErrorList";
 import z from "zod";
 import { parseWithZod } from "@conform-to/zod/v4";
@@ -141,7 +141,7 @@ export default function RouteComponent({
       >
         <label
           htmlFor={fields.title.id}
-          className="flex flex-col gap-1 font-medium"
+          className="flex flex-col gap-1 font-bold"
         >
           Title
         </label>
@@ -156,7 +156,7 @@ export default function RouteComponent({
 
         <label
           htmlFor={fields.content.id}
-          className="flex flex-col gap-1 font-medium"
+          className="flex flex-col gap-1 font-bold"
         >
           Content
         </label>
@@ -205,10 +205,11 @@ export default function RouteComponent({
   );
 }
 
-export function ErrorBoundary({ params }: Route.ErrorBoundaryProps) {
+export function ErrorBoundary({ error, params }: Route.ErrorBoundaryProps) {
   return (
     <GeneralErrorBoundary
-      statusHandlers={{
+      error={error}
+      handlers={{
         404: () => <p>No notes with "{params.noteId}" exists</p>,
       }}
     />
