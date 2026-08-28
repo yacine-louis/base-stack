@@ -18,13 +18,13 @@ export default function RouteComponent({ loaderData }: Route.ComponentProps) {
   const { users } = loaderData;
   return (
     <>
-      <p>Users page</p>
+      <p className="text-foreground">Users page</p>
       <div className="flex flex-col">
         {users.map((user) => (
           <Link
             to={href("/users/:username", { username: user.username })}
             key={user.id}
-            className="text-blue-500 underline"
+            className="text-primary decoration-primary/50 hover:text-primary/80 underline underline-offset-4"
           >
             {user.username}
           </Link>

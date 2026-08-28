@@ -4,7 +4,7 @@ import type { Route } from "../+types/root";
 export default function RouteComponent() {
   return (
     <>
-      <h1 className="text-h1">index route</h1>
+      <h1 className="text-h1 text-foreground">index route</h1>
     </>
   );
 }

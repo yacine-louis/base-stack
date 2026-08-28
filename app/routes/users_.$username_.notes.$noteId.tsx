@@ -60,13 +60,13 @@ export default function RouteComponent({
   const { note } = loaderData;
   const navigation = useNavigation();
   return (
-    <div>
-      <h2 className="text-h2">{note.title}</h2>
-      <p>{note.content}</p>
+    <div className="text-foreground">
+      <h2 className="text-2xl">{note.title}</h2>
+      <p className="text-foreground">{note.content}</p>
 
       <div className="mt-4 flex gap-2">
         <Link
-          className="inline-block rounded-md border px-3 py-2"
+          className="border-input bg-background hover:bg-muted inline-block rounded-md border px-3 py-2 text-sm font-medium"
           to={href("/users/:username/notes/:noteId/edit", {
             username: params.username,
             noteId: params.noteId,
@@ -78,7 +78,7 @@ export default function RouteComponent({
         <Form method="POST">
           <button
             type="submit"
-            className="cursor-pointer rounded-md border px-4 py-2"
+            className="border-input bg-background hover:bg-muted cursor-pointer rounded-md border px-4 py-2 text-sm font-medium disabled:opacity-50"
             name="intent"
             value="delete"
             disabled={navigation.formData?.get("intent") === "delete"}

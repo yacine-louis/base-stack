@@ -27,11 +27,11 @@ export default function RouteComponent({ loaderData }: Route.ComponentProps) {
   const { id, username } = loaderData;
   return (
     <>
-      <p>{id}</p>
-      <p>{username}</p>
+      <p className="text-foreground">{id}</p>
+      <p className="text-foreground">{username}</p>
 
       <Link
-        className="text-blue-500 underline"
+        className="text-primary decoration-primary/50 hover:text-primary/80 underline underline-offset-4"
         to={href("/users/:username/notes", { username: username })}
       >
         Go to Notes

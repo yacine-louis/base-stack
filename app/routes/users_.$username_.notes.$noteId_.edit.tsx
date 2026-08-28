@@ -139,36 +139,42 @@ export default function RouteComponent({
         className="flex flex-col gap-4"
         {...getFormProps(form)}
       >
-        <label
-          htmlFor={fields.title.id}
-          className="flex flex-col gap-1 font-bold"
-        >
-          Title
-        </label>
-        <input {...getInputProps(fields.title, { type: "text" })} />
-
-        <div className="min-h-6">
-          <ErrorList
-            errorId={fields.title.errorId}
-            errors={fields.title.errors}
+        <div className="flex flex-col gap-1">
+          <label
+            htmlFor={fields.title.id}
+            className="text-foreground font-bold"
+          >
+            Title
+          </label>
+          <input
+            className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-9 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+            {...getInputProps(fields.title, { type: "text" })}
           />
+          <div className="min-h-6">
+            <ErrorList
+              errorId={fields.title.errorId}
+              errors={fields.title.errors}
+            />
+          </div>
         </div>
 
-        <label
-          htmlFor={fields.content.id}
-          className="flex flex-col gap-1 font-bold"
-        >
-          Content
-        </label>
-        <textarea
-          className="min-h-40 resize-none rounded-md border px-3 py-2"
-          {...getTextareaProps(fields.content)}
-        />
-        <div className="min-h-6">
-          <ErrorList
-            errorId={fields.content.errorId}
-            errors={fields.content.errors}
+        <div className="flex flex-col gap-1">
+          <label
+            htmlFor={fields.content.id}
+            className="text-foreground font-bold"
+          >
+            Content
+          </label>
+          <textarea
+            className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring min-h-40 w-full resize-none rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+            {...getTextareaProps(fields.content)}
           />
+          <div className="min-h-6">
+            <ErrorList
+              errorId={fields.content.errorId}
+              errors={fields.content.errors}
+            />
+          </div>
         </div>
         <div className="min-h-6">
           <ErrorList errorId={form.errorId} errors={form.errors} />
@@ -176,12 +182,12 @@ export default function RouteComponent({
         <div className="flex gap-2">
           <button
             type="reset"
-            className="cursor-pointer rounded-md border px-4 py-2"
+            className="border-input bg-background hover:bg-muted cursor-pointer rounded-md border px-4 py-2 text-sm font-medium"
           >
             Reset
           </button>
           <Link
-            className="rounded-md border px-4 py-2"
+            className="border-input bg-background hover:bg-muted rounded-md border px-4 py-2 text-sm font-medium"
             to={href("/users/:username/notes/:noteId", {
               username: params.username,
               noteId: params.noteId,
@@ -192,7 +198,7 @@ export default function RouteComponent({
           <button
             type="submit"
             className={cn(
-              "rounded-md bg-blue-600 px-4 py-2 text-white",
+              "bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-4 py-2 text-sm font-medium disabled:opacity-50",
               isSubmitting ? "opacity-75" : undefined,
             )}
             disabled={isSubmitting}

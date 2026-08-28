@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 /**
  * Re-runs a callback whenever the window/tab regains visibility (e.g. the
@@ -20,10 +20,15 @@ import { useEffect } from "react";
  * ```
  */
 export function useRefetchOnWindowFocus(callback: () => void) {
+  const callbackRef = useRef(callback);
+  useEffect(() => {
+    callbackRef.current = callback;
+  });
+
   useEffect(() => {
     function handleVisibilityChange() {
       if (document.visibilityState !== "hidden") {
-        callback();
+        callbackRef.current();
       }
     }
 
@@ -31,5 +36,5 @@ export function useRefetchOnWindowFocus(callback: () => void) {
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [callback]);
+  }, []);
 }

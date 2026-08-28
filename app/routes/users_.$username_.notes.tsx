@@ -29,14 +29,19 @@ export async function loader({ params }: Route.LoaderArgs) {
 
   return { data };
 }
+let rerenders = 0;
 
 export default function RouteComponent({ loaderData }: Route.ComponentProps) {
   const { data } = loaderData;
+  // oxlint-disable-next-line
+  rerenders += 1;
   return (
     <>
       <div className="flex">
-        <aside className="w-64 shrink-0 border-r border-gray-200 p-4">
-          <h2 className="mb-3 text-sm font-semibold text-gray-500">Notes</h2>
+        <aside className="border-border bg-card w-64 shrink-0 border-r p-4">
+          <h2 className="text-muted-foreground mb-3 text-sm font-semibold">
+            Notes
+          </h2>
 
           <nav className="flex flex-col gap-1">
             {data.notes.map((note) => (
@@ -47,8 +52,8 @@ export default function RouteComponent({ loaderData }: Route.ComponentProps) {
                   cn(
                     "rounded-md px-3 py-2 text-sm",
                     isActive
-                      ? "bg-blue-500 text-gray-900"
-                      : "text-gray-700 hover:bg-gray-100",
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
                   )
                 }
                 preventScrollReset
@@ -59,7 +64,7 @@ export default function RouteComponent({ loaderData }: Route.ComponentProps) {
           </nav>
         </aside>
 
-        <main className="min-w-0 flex-1 p-6">
+        <main className="bg-background text-foreground min-w-0 flex-1 p-6">
           <Outlet />
         </main>
       </div>

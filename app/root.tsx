@@ -38,10 +38,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
-        <script
-          crossOrigin="anonymous"
-          src="https://unpkg.com/react-scan/dist/auto.global.js"
-        />
+        <script src="/auto.global.js" async />
         <Links />
       </head>
       <body>
@@ -79,6 +76,7 @@ export default function App() {
       revalidator.revalidate();
     }
   });
+
   /* __refetch on window focus__ */
 
   return (

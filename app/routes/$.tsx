@@ -9,23 +9,30 @@ export async function action() {
   throw data(null, { status: 404 });
 }
 
-export default function NotFound() {
+function NotFound() {
   const location = useLocation();
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="text-foreground flex flex-col gap-6">
       <div className="flex flex-col gap-3">
-        <h1>We can't find this page:</h1>
-        <pre className="text-lg break-all whitespace-pre-wrap">
+        <h1 className="text-h3">We can't find this page:</h1>
+        <pre className="bg-muted text-muted-foreground rounded-md p-3 text-lg break-all whitespace-pre-wrap">
           {location.pathname}
         </pre>
       </div>
 
-      <Link to="/" className="text-base underline">
+      <Link
+        to="/"
+        className="text-primary decoration-primary/50 hover:text-primary/80 text-base underline underline-offset-4"
+      >
         Back to home
       </Link>
     </div>
   );
+}
+
+export default function RouteComponent() {
+  return <NotFound />;
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
