@@ -1,7 +1,8 @@
 import { href, Link } from "react-router";
-import type { Route } from "./+types/users";
+import type { Route } from "./+types/route";
 import { prisma } from "@db/prisma";
-import { GeneralErrorBoundary } from "~/components/errors";
+import { GeneralErrorBoundary } from "~/components/GeneralErrorBoundary";
+import { useEffect } from "react";
 
 export async function loader() {
   const users = await prisma.user.findMany({
@@ -11,16 +12,20 @@ export async function loader() {
     },
   });
 
-  return { users };
+  return new Response(JSON.stringify({ users }), {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 }
 
 export default function RouteComponent({ loaderData }: Route.ComponentProps) {
-  const { users } = loaderData;
+  const { users } = loaderData as any;
   return (
     <>
       <p className="text-foreground">Users page</p>
       <div className="flex flex-col">
-        {users.map((user) => (
+        {users.map((user: { username: string; id: string }) => (
           <Link
             to={href("/users/:username", { username: user.username })}
             key={user.id}

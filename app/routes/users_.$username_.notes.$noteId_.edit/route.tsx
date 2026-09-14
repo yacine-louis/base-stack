@@ -1,5 +1,5 @@
 import { prisma } from "@db/prisma";
-import type { Route } from "./+types/users_.$username_.notes.$noteId_.edit";
+import type { Route } from "./+types/route";
 import { cn, invariantResponse } from "~/utils/misc";
 import {
   data,
@@ -11,7 +11,7 @@ import {
   useNavigate,
   useNavigation,
 } from "react-router";
-import { GeneralErrorBoundary } from "~/components/errors";
+import { GeneralErrorBoundary } from "~/components/GeneralErrorBoundary";
 import { ErrorList } from "~/components/ErrorList";
 import z from "zod";
 import { parseWithZod } from "@conform-to/zod/v4";
@@ -23,12 +23,11 @@ import {
 } from "@conform-to/react";
 import { getConstraints } from "@conform-to/zod/v4/future";
 import { useHydrated } from "~/hooks/useHydrated";
-
 const titleMaxLength = 100;
 const contentMaxLength = 1000;
 
 const NoteEditorSchema = z.object({
-  title: z.string({ error: "Invalid type" }).min(1).max(titleMaxLength),
+  title: z.string().min(1).max(titleMaxLength),
   content: z.string().min(1).max(contentMaxLength),
 });
 
@@ -101,13 +100,15 @@ export default function RouteComponent({
 
     // add constraints to form fields
     constraint: getConstraints(NoteEditorSchema),
-    // last submittion
-    lastResult: actionData?.result,
     defaultValue: {
       title: note.title,
       content: note.content,
     },
+
+    // last submittion
+    lastResult: actionData?.result,
     shouldValidate: "onBlur",
+
     // client side validation
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: NoteEditorSchema });

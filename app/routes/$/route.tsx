@@ -1,6 +1,6 @@
 import { data, Link, useLocation } from "react-router";
-import { GeneralErrorBoundary } from "~/components/errors";
-import type { Route } from "./+types/$";
+import { GeneralErrorBoundary } from "~/components/GeneralErrorBoundary";
+import type { Route } from "./+types/route";
 export async function loader() {
   throw data(null, { status: 404 });
 }

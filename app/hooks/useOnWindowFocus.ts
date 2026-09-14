@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useMatches, useRevalidator, type EntryContext } from "react-router";
 
 /**
  * Re-runs a callback whenever the window/tab regains visibility (e.g. the
@@ -14,12 +15,12 @@ import { useEffect, useRef } from "react";
  * @example
  * ```tsx
  * const revlidator = useRevalidator();
- * useRefetchOnWindowFocus(() => {
+ * useOnWindowFocus(() => {
  *   revalidator.revalidate();
  * });
  * ```
  */
-export function useRefetchOnWindowFocus(callback: () => void) {
+export function useOnWindowFocus(callback: () => void) {
   const callbackRef = useRef(callback);
   useEffect(() => {
     callbackRef.current = callback;
@@ -27,7 +28,7 @@ export function useRefetchOnWindowFocus(callback: () => void) {
 
   useEffect(() => {
     function handleVisibilityChange() {
-      if (document.visibilityState !== "hidden") {
+      if (document.visibilityState === "visible") {
         callbackRef.current();
       }
     }
@@ -37,4 +38,28 @@ export function useRefetchOnWindowFocus(callback: () => void) {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, []);
+}
+
+declare global {
+  interface Window {
+    __reactRouterManifest: EntryContext["manifest"] | undefined;
+  }
+}
+
+export function useRefetchOnWindowFocus() {
+  const matches = useMatches();
+  const revalidator = useRevalidator();
+
+  useOnWindowFocus(() => {
+    const manifestRoutes = window.__reactRouterManifest?.routes;
+    if (!manifestRoutes) return;
+    const anyMatchHasLoader = matches.some((m) => {
+      const routeInfo = manifestRoutes[m.id];
+      return Boolean(routeInfo?.hasLoader || routeInfo?.hasClientLoader);
+    });
+
+    if (anyMatchHasLoader) {
+      revalidator.revalidate();
+    }
+  });
 }

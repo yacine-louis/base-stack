@@ -6,16 +6,10 @@ function subscribe() {
 }
 
 /**
- * Custom hook to determine if the component is hydrated.
+ * Returns whether the component has hydrated on the client.
  *
- * This hook uses `useSyncExternalStore` to manage the hydration state.
- *
- * - When doing Client-Side Rendering, the result will always be false on the
- *   first render and true from then on. Even if a new component renders it will
- *   always start with true.
- * - When doing Server-Side Rendering, the result will always be false.
- *
- * @returns {boolean} - Returns true if the component is hydrated, otherwise false.
+ * During SSR, this always returns `false`. On the client, it returns
+ * `false` for the initial render and `true` after hydration.
  */
 export function useHydrated() {
   return useSyncExternalStore(

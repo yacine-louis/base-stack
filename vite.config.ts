@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import { reactRouter } from "@react-router/dev/vite";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
@@ -44,8 +45,19 @@ export default defineConfig(({ mode }) => {
         iconNameTransformer: (iconName) => iconName,
       }),
     ],
+    test: {
+      globals: true,
+      environment: "happy-dom",
+      browser: {
+        enabled: true,
+      },
+    },
     resolve: {
       tsconfigPaths: true,
     },
+    build: {
+      minify: false,
+    },
+    define: {},
   };
 });

@@ -1,5 +1,5 @@
-import { GeneralErrorBoundary } from "~/components/errors";
-import type { Route } from "./+types/users_.$username_.notes._index";
+import { GeneralErrorBoundary } from "~/components/GeneralErrorBoundary";
+import type { Route } from "./+types/route";
 
 export default function RouteComponent() {
   return <p className="text-muted-foreground">no note is selected</p>;

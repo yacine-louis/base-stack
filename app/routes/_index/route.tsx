@@ -1,5 +1,5 @@
-import { GeneralErrorBoundary } from "~/components/errors";
-import type { Route } from "../+types/root";
+import { GeneralErrorBoundary } from "~/components/GeneralErrorBoundary";
+import type { Route } from "./+types/route";
 
 export default function RouteComponent() {
   return (

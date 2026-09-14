@@ -3,6 +3,10 @@ import { useRouteLoaderData, useLoaderData } from "react-router";
 
 type SerializeFrom<T> = ReturnType<typeof useLoaderData<T>>;
 
+/**
+ * Typed version of useRouteLoaderData
+ * @returns Returns the `loader` data for a given route by route ID.
+ */
 export function useRouteLoaderDataTyped<T = unknown>(routeId: RouteId) {
   return useRouteLoaderData(routeId) as SerializeFrom<T>;
 }

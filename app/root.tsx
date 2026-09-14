@@ -6,17 +6,14 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useMatches,
-  useRevalidator,
-  type EntryContext,
 } from "react-router";
 
 import type { Route } from "./+types/root";
 import "./styles/app.css";
 import fontStyleSheetUrl from "./styles/font.css?url&no-inline";
 import React from "react";
-import { useRefetchOnWindowFocus } from "./hooks/useRefetchOnWindowFocus";
-import { GeneralErrorBoundary } from "./components/errors";
+import { useRefetchOnWindowFocus } from "./hooks/useOnWindowFocus";
+import { GeneralErrorBoundary } from "./components/GeneralErrorBoundary";
 export const links: Route.LinksFunction = () => [
   // handling favicon
   { rel: "icon", type: "image/x-icon", href: "/favicon.ico", sizes: "32x32" },
@@ -50,34 +47,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-/* __refetch on window focus__ */
-declare global {
-  interface Window {
-    __reactRouterManifest: EntryContext["manifest"] | undefined;
-  }
-}
-/* __refetch on window focus__ */
-
 export default function App() {
-  /* __refetch on window focus__ */
-  const matches = useMatches();
-  const revalidator = useRevalidator();
-
-  useRefetchOnWindowFocus(() => {
-    const manifestRoutes = window.__reactRouterManifest?.routes;
-    if (!manifestRoutes) return;
-
-    const anyMatchHasLoader = matches.some((m) => {
-      const routeInfo = manifestRoutes[m.id];
-      return Boolean(routeInfo?.hasLoader || routeInfo?.hasClientLoader);
-    });
-
-    if (anyMatchHasLoader) {
-      revalidator.revalidate();
-    }
-  });
-
-  /* __refetch on window focus__ */
+  // refetch loaders on window focus
+  useRefetchOnWindowFocus();
 
   return (
     <div>

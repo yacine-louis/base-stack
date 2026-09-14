@@ -6,7 +6,19 @@
   },
   "rules": {
     "no-unused-vars": "warn",
-    "react/rules-of-hooks": "error"
+    "react/rules-of-hooks": "error",
+    "react/error-boundaries": "error",
+    "react/globals": "error",
+    "react/immutability": "error",
+    "react/incompatible-library": "error",
+    "react/preserve-manual-memoization": "error",
+    "react/purity": "error",
+    "react/set-state-in-effect": "error",
+    "react/set-state-in-render": "error",
+    "react/static-components": "error",
+    "react/use-memo": "error",
+    "react/unsupported-syntax": "error",
+    "react/void-use-memo": "error"
   },
   "env": {
     "builtin": true
