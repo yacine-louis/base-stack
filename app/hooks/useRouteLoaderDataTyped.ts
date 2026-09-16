@@ -1,4 +1,4 @@
-import type { RouteId } from "~types/route-id";
+import type { RouteId } from "~/types/route-id";
 import { useRouteLoaderData, useLoaderData } from "react-router";
 
 type SerializeFrom<T> = ReturnType<typeof useLoaderData<T>>;

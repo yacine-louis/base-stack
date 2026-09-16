@@ -1,7 +1,7 @@
-process.loadEnvFile(".env");
+import type { StandardSchemaV1 } from "@standard-schema/spec";
 import z from "zod";
 
-const envSchema = z.object({
+export const envSchema = z.object({
   NODE_ENV: z.enum(["production", "development", "test"]),
   DATABASE_URL: z.string().trim().min(1),
   DATABASE_USER: z.string().trim().min(1),
@@ -17,17 +17,20 @@ declare global {
     interface ProcessEnv extends z.infer<typeof envSchema> {}
   }
 }
-
-export function initEnv() {
-  const parsed = envSchema.safeParse(process.env);
-
-  if (parsed.success === false) {
-    console.error(
-      "Invalid environment variables:",
-      z.prettifyError(parsed.error),
-    );
-
-    throw new Error("Invalid environment variables");
+export async function checkEnv<T extends StandardSchemaV1>(
+  schema: T,
+  env: Record<string, unknown>,
+): Promise<StandardSchemaV1.InferOutput<T>> {
+  const result = await schema["~standard"].validate(env);
+  if (result.issues) {
+    throw new EnvValidationError(result.issues);
   }
-  return parsed.data;
+  return result.value;
+}
+
+export class EnvValidationError extends Error {
+  constructor(public readonly issues: readonly StandardSchemaV1.Issue[]) {
+    super("Invalid environment variables");
+    this.name = "EnvValidationError";
+  }
 }

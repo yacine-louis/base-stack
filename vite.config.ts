@@ -1,4 +1,3 @@
-/// <reference types="vitest/config" />
 import { reactRouter } from "@react-router/dev/vite";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
@@ -6,6 +5,9 @@ import { iconsSpritesheet } from "vite-plugin-icons-spritesheet";
 import { reactRouterDevTools } from "react-router-devtools";
 import babel from "@rolldown/plugin-babel";
 import { reactCompilerPreset } from "@vitejs/plugin-react";
+import { envSchema, checkEnv } from "./app/utils/env.server.ts";
+import type * as Vite from "vite";
+import type { StandardSchemaV1 } from "@standard-schema/spec";
 
 export default defineConfig(({ mode }) => {
   const enableRouterDevTools =
@@ -14,6 +16,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [
+      validateEnv(envSchema),
       ...(enableRouterDevTools
         ? [
             reactRouterDevTools({
@@ -61,3 +64,31 @@ export default defineConfig(({ mode }) => {
     define: {},
   };
 });
+
+// validate env variables when vite build/dev server is started
+function validateEnv<T extends StandardSchemaV1>(schema: T): Vite.Plugin {
+  return {
+    name: "vite-plugin-validate-env",
+    enforce: "pre",
+
+    async config(config, { mode }) {
+      const { loadEnv } = await import("vite");
+      // merges env variables from what is in proccess.env and what .env files are loaded base on mode
+      const env = loadEnv(mode, config.envDir ?? process.cwd(), "");
+
+      Object.assign(process.env, env);
+
+      try {
+        await checkEnv(schema, env);
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(`\n❌ ${error.message}\n`);
+          if ("issues" in error) {
+            console.error(error.issues);
+          }
+        }
+        process.exit(1);
+      }
+    },
+  };
+}

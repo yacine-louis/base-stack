@@ -38,8 +38,9 @@ async function main() {
   }
 
   await writeFile(
-    resolve("./types/route-id.d.ts"),
-    `export type RouteId = ${ids.map((id) => `"${id}"`).join(" | ")}`,
+    resolve("./app/types/route-id.d.ts"),
+    `export type RouteId =\n` +
+      `${ids.map((id) => `  | "${id}"`).join("\n")};\n`,
   );
 }
 
