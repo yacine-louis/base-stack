@@ -14,6 +14,7 @@ import fontStyleSheetUrl from "./styles/font.css?url&no-inline";
 import React from "react";
 import { useRefetchOnWindowFocus } from "./hooks/useOnWindowFocus";
 import { GeneralErrorBoundary } from "./components/GeneralErrorBoundary";
+
 export const links: Route.LinksFunction = () => [
   // handling favicon
   { rel: "icon", type: "image/x-icon", href: "/favicon.ico", sizes: "32x32" },
@@ -30,20 +31,22 @@ export const links: Route.LinksFunction = () => [
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <Meta />
-        <script src="/auto.global.js" async />
-        <Links />
-      </head>
-      <body>
-        {children}
-        <ScrollRestoration />
-        <Scripts />
-      </body>
-    </html>
+    <>
+      <html lang="en">
+        <head>
+          <meta charSet="utf-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <Meta />
+          <script src="/auto.global.js" async />
+          <Links />
+        </head>
+        <body>
+          {children}
+          <ScrollRestoration />
+          <Scripts />
+        </body>
+      </html>
+    </>
   );
 }
 

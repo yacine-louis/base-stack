@@ -1,35 +1,12 @@
 import { prisma } from "@db/prisma";
 import type { Route } from "./+types/route";
-import { cn, invariantResponse } from "~/utils/misc";
-import {
-  data,
-  Form,
-  href,
-  Link,
-  redirect,
-  useFormAction,
-  useNavigate,
-  useNavigation,
-} from "react-router";
+import { invariantResponse } from "~/utils/misc";
+import { data, Form, href, Link, redirect } from "react-router";
 import { GeneralErrorBoundary } from "~/components/GeneralErrorBoundary";
-import { ErrorList } from "~/components/ErrorList";
-import z from "zod";
-import { parseWithZod } from "@conform-to/zod/v4";
-import {
-  getFormProps,
-  getInputProps,
-  getTextareaProps,
-  useForm,
-} from "@conform-to/react";
-import { getConstraints } from "@conform-to/zod/v4/future";
-import { useHydrated } from "~/hooks/useHydrated";
-const titleMaxLength = 100;
-const contentMaxLength = 1000;
-
-const NoteEditorSchema = z.object({
-  title: z.string().min(1).max(titleMaxLength),
-  content: z.string().min(1).max(contentMaxLength),
-});
+import { createEditNoteFormOptions } from "./edit-note-form";
+import { createServerValidate } from "~/utils/form.server";
+import { isNoteTitleUnique } from "./is-title-unique.server";
+import { useAppForm } from "~/components/form/app-form";
 
 export async function loader({ params }: Route.LoaderArgs) {
   const note = await prisma.note.findFirst({
@@ -53,19 +30,27 @@ export async function loader({ params }: Route.LoaderArgs) {
 export async function action({ request, params }: Route.ActionArgs) {
   const formData = await request.formData();
 
-  const submission = parseWithZod(formData, { schema: NoteEditorSchema });
+  const serverValidate = createServerValidate(
+    createEditNoteFormOptions(async ({ value, createErrorMap }) => {
+      const unique = await isNoteTitleUnique({
+        title: value.title,
+        username: params.username,
+        noteId: params.noteId,
+      });
+      if (unique) return undefined;
 
-  if (submission.status !== "success") {
-    return data(
-      { result: submission.reply() },
-      {
-        status: submission.status === "error" ? 400 : 200,
-      },
-    );
+      const errors = createErrorMap();
+      errors.fields.title = "You already have a note with this title";
+      return errors;
+    }),
+  );
+
+  const result = await serverValidate(formData);
+  if (!result.success) {
+    return data({ serverState: result.serverState }, { status: 400 });
   }
 
-  const { title, content } = submission.value;
-
+  const { title, content } = result.values;
   await prisma.note.update({
     data: { title, content },
     where: { id: params.noteId },
@@ -86,128 +71,91 @@ export default function RouteComponent({
 }: Route.ComponentProps) {
   const { note } = loaderData;
 
-  const navigation = useNavigation();
-  const formAction = useFormAction();
-  const isSubmitting =
-    navigation.state === "submitting" && navigation.formAction === formAction;
-
-  const isHydrated = useHydrated();
-  const navigate = useNavigate();
-
-  const [form, fields] = useForm({
-    id: "edit-note-form",
-    defaultNoValidate: isHydrated,
-
-    // add constraints to form fields
-    constraint: getConstraints(NoteEditorSchema),
-    defaultValue: {
+  const form = useAppForm({
+    ...createEditNoteFormOptions(),
+    defaultValues: {
       title: note.title,
       content: note.content,
     },
-
-    // last submittion
-    lastResult: actionData?.result,
-    shouldValidate: "onBlur",
-
-    // client side validation
-    onValidate({ formData }) {
-      return parseWithZod(formData, { schema: NoteEditorSchema });
-    },
-    onSubmit(event, { formData }) {
-      const currentValues = {
-        title: formData.get("title"),
-        content: formData.get("content"),
-      };
-
-      const unchanged =
-        currentValues.title === note.title &&
-        currentValues.content === note.content;
-      if (unchanged) {
-        event.preventDefault();
-        navigate(
-          href("/users/:username/notes", {
-            username: params.username,
-          }),
-        );
-      }
-    },
+    serverState: actionData?.serverState,
   });
 
   return (
     <>
-      <Form
-        method="POST"
-        className="flex flex-col gap-4"
-        {...getFormProps(form)}
-      >
-        <div className="flex flex-col gap-1">
-          <label
-            htmlFor={fields.title.id}
-            className="text-foreground font-bold"
-          >
-            Title
-          </label>
-          <input
-            className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-9 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
-            {...getInputProps(fields.title, { type: "text" })}
-          />
-          <div className="min-h-6">
-            <ErrorList
-              errorId={fields.title.errorId}
-              errors={fields.title.errors}
-            />
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <label
-            htmlFor={fields.content.id}
-            className="text-foreground font-bold"
-          >
-            Content
-          </label>
-          <textarea
-            className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring min-h-40 w-full resize-none rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
-            {...getTextareaProps(fields.content)}
-          />
-          <div className="min-h-6">
-            <ErrorList
-              errorId={fields.content.errorId}
-              errors={fields.content.errors}
-            />
-          </div>
-        </div>
-        <div className="min-h-6">
-          <ErrorList errorId={form.errorId} errors={form.errors} />
-        </div>
-        <div className="flex gap-2">
-          <button
-            type="reset"
-            className="border-input bg-background hover:bg-muted cursor-pointer rounded-md border px-4 py-2 text-sm font-medium"
-          >
-            Reset
-          </button>
-          <Link
-            className="border-input bg-background hover:bg-muted rounded-md border px-4 py-2 text-sm font-medium"
-            to={href("/users/:username/notes/:noteId", {
-              username: params.username,
-              noteId: params.noteId,
-            })}
-          >
-            Cancel
-          </Link>
-          <button
-            type="submit"
-            className={cn(
-              "bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-4 py-2 text-sm font-medium disabled:opacity-50",
-              isSubmitting ? "opacity-75" : undefined,
+      <form.AppForm>
+        <Form
+          id={form.formId}
+          method="post"
+          noValidate
+          onSubmit={() => form.handleSubmit()}
+          className="flex flex-col gap-4"
+        >
+          <form.Field name="title">
+            {(field) => (
+              <div className="flex flex-col gap-1">
+                <field.Label className="text-foreground font-bold">
+                  Title
+                </field.Label>
+                <field.TextInput className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-9 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none" />
+                <field.Error className="min-h-6" />
+              </div>
             )}
-            disabled={isSubmitting}
-          >
-            Submit
-          </button>
-        </div>
-      </Form>
+          </form.Field>
+
+          <form.Field name="content">
+            {(field) => (
+              <div className="flex flex-col gap-1">
+                <field.Label className="text-foreground font-bold">
+                  Content
+                </field.Label>
+                <field.TextArea className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring min-h-40 w-full resize-none rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none" />
+                <field.Error className="min-h-6" />
+              </div>
+            )}
+          </form.Field>
+
+          <div role="alert" className="min-h-6">
+            <form.Error />
+          </div>
+
+          <div className="flex gap-2">
+            <button
+              type="reset"
+              className="border-input bg-background hover:bg-muted cursor-pointer rounded-md border px-4 py-2 text-sm font-medium"
+              onClick={(event) => {
+                event.preventDefault();
+                form.reset();
+              }}
+            >
+              Reset
+            </button>
+            <Link
+              className="border-input bg-background hover:bg-muted rounded-md border px-4 py-2 text-sm font-medium"
+              to={href("/users/:username/notes/:noteId", {
+                username: params.username,
+                noteId: params.noteId,
+              })}
+            >
+              Cancel
+            </Link>
+
+            <form.Subscribe
+              selector={(state) => [state.canSubmit, state.isSubmitting]}
+            >
+              {([canSubmit, isSubmitting]) => (
+                <button
+                  form={form.formId}
+                  type="submit"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-4 py-2 text-sm font-medium disabled:opacity-50"
+                  disabled={!canSubmit || isSubmitting}
+                >
+                  {isSubmitting ? "Submitting..." : "Submit"}
+                </button>
+              )}
+            </form.Subscribe>
+          </div>
+        </Form>
+      </form.AppForm>
     </>
   );
 }

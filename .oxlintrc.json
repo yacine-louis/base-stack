@@ -19,8 +19,5 @@
     "react/use-memo": "error",
     "react/unsupported-syntax": "error",
     "react/void-use-memo": "error"
-  },
-  "env": {
-    "builtin": true
   }
 }
