@@ -32,7 +32,6 @@
   },
   "devDependencies": {
     "@react-router/dev": "^8",
-    "@react-router/fs-routes": "^8.3.1",
     "@tailwindcss/vite": "^4.2.2",
     "@types/node": "^22.20.1",
     "@types/react": "^19.3.0",
@@ -44,6 +43,7 @@
     "prettier": "^3.9.6",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "prisma": "^7.9.1",
+    "react-router-auto-routes": "^1.0.0",
     "react-router-devtools": "6.2.3",
     "tailwind-merge": "^3.6.0",
     "tailwindcss": "^4.2.2",

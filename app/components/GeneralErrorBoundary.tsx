@@ -12,7 +12,7 @@ type GeneralErrorBoundaryProps = {
 
 const defaultStatusHandler: StatusHandler = (error) => (
   <p className="text-lg font-bold">
-    {error.status} {error.statusText}
+    {error.status} {error.data}
   </p>
 );
 

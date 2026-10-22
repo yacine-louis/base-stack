@@ -1,8 +1,8 @@
 import { prisma } from "@db/prisma";
-import type { Route } from "./+types/route";
 import { href, Link, Outlet } from "react-router";
 import { GeneralErrorBoundary } from "~/components/GeneralErrorBoundary";
 import { invariantResponse } from "~/utils/misc";
+import type { Route } from "./+types/index";
 
 export async function loader({ params }: Route.LoaderArgs) {
   const { username } = params;

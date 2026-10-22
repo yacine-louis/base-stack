@@ -10,7 +10,7 @@ export const contentRequiredMessage = "Content is required";
 export const contentTooLongMessage = `Content must be ${contentMaxLength} characters or less`;
 export const titleTakenMessage = "A note with this title already exists";
 
-export const EditNoteFormSchema = z
+export const NoteFormSchema = z
   .object({
     title: z
       .string()
@@ -26,22 +26,22 @@ export const EditNoteFormSchema = z
     message: "Title and content must be different", // no `path` -> form-level issue
   });
 
-export type EditNoteFormValues = z.infer<typeof EditNoteFormSchema>;
-export const editNoteFormDefaultValues: EditNoteFormValues = {
+export type NoteFormValues = z.infer<typeof NoteFormSchema>;
+export const noteFormDefaultValues: NoteFormValues = {
   title: "",
   content: "",
 };
 
-export function createEditNoteFormOptions(
-  serverRun: FormValidatorFn<EditNoteFormValues> = async () => undefined,
+export function createNoteFormOptions(
+  serverRun: FormValidatorFn<NoteFormValues> = async () => undefined,
 ) {
   return formOptions({
-    defaultValues: editNoteFormDefaultValues,
+    defaultValues: noteFormDefaultValues,
     validators: [
       {
         triggers: ["change", "server"],
         run: async ({ value, parseIssues }) => {
-          const result = await EditNoteFormSchema["~standard"].validate(value);
+          const result = await NoteFormSchema["~standard"].validate(value);
           if (!result.issues) return undefined;
 
           const parsed = parseIssues(result.issues);

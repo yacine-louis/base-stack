@@ -17,7 +17,7 @@ function FieldError(props: FormErrorProps) {
       id={getErrorId(field.form.formId, field.name)}
     >
       {errors.length > 0 && (
-        <ul className="ml-4 flex list-disc flex-col gap-1">
+        <ul className="m-0 ml-4 flex list-none flex-col gap-1">
           {errors.map((error, i) => (
             <li key={`${i}-${error.message}`}>{error.message}</li>
           ))}

@@ -1,6 +1,7 @@
 import { createFormHook } from "@tanstack/react-form";
 import { lazy } from "react";
 
+// React lazy importing loses generics, so import this directly
 const TextInput = lazy(() => import("./fields-ui/text-input"));
 const TextArea = lazy(() => import("./fields-ui/text-area"));
 const Label = lazy(() => import("./fields-ui/label"));

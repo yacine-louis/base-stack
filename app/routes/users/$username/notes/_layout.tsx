@@ -1,6 +1,6 @@
 import { prisma } from "@db/prisma";
-import type { Route } from "./+types/route";
-import { NavLink, Outlet } from "react-router";
+import type { Route } from "./+types/_layout";
+import { href, Link, NavLink, Outlet } from "react-router";
 import { GeneralErrorBoundary } from "~/components/GeneralErrorBoundary";
 import { cn, invariantResponse } from "~/utils/misc";
 
@@ -29,12 +29,13 @@ export async function loader({ params }: Route.LoaderArgs) {
 
   return { data };
 }
-let rerenders = 0;
 
-export default function RouteComponent({ loaderData }: Route.ComponentProps) {
+export default function RouteComponent({
+  loaderData,
+  params,
+}: Route.ComponentProps) {
   const { data } = loaderData;
-  // oxlint-disable-next-line
-  rerenders += 1;
+
   return (
     <>
       <div className="flex">
@@ -44,6 +45,14 @@ export default function RouteComponent({ loaderData }: Route.ComponentProps) {
           </h2>
 
           <nav className="flex flex-col gap-1">
+            <Link
+              to={href("/users/:username/notes/new", {
+                username: params.username,
+              })}
+              className="w-full cursor-pointer rounded-md bg-amber-200 py-2 text-center"
+            >
+              New
+            </Link>
             {data.notes.map((note) => (
               <NavLink
                 key={note.id}
@@ -72,13 +81,6 @@ export default function RouteComponent({ loaderData }: Route.ComponentProps) {
   );
 }
 
-export function ErrorBoundary({ error, params }: Route.ErrorBoundaryProps) {
-  return (
-    <GeneralErrorBoundary
-      error={error}
-      handlers={{
-        404: () => <p>No notes with the username "{params.username}" exists</p>,
-      }}
-    />
-  );
+export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
+  return <GeneralErrorBoundary error={error} />;
 }

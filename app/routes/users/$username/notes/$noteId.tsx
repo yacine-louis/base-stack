@@ -1,5 +1,5 @@
 import { prisma } from "@db/prisma";
-import type { Route } from "./+types/route";
+import type { Route } from "./+types/$noteId";
 import { GeneralErrorBoundary } from "~/components/GeneralErrorBoundary";
 import { invariantResponse } from "~/utils/misc";
 import { Form, href, Link, redirect, useNavigation } from "react-router";

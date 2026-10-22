@@ -1,11 +1,11 @@
 import { prisma } from "@db/prisma";
-import type { Route } from "./+types/route";
+import type { Route } from "./+types/$noteId.edit";
 import { invariantResponse } from "~/utils/misc";
 import { data, Form, href, Link, redirect } from "react-router";
 import { GeneralErrorBoundary } from "~/components/GeneralErrorBoundary";
-import { createEditNoteFormOptions } from "./edit-note-form";
 import { createServerValidate } from "~/utils/form.server";
-import { isNoteTitleUnique } from "./is-title-unique.server";
+import { createNoteFormOptions } from "./+form/config";
+import { isNoteTitleUnique } from "./+form/actions.server";
 import { useAppForm } from "~/components/form/app-form";
 
 export async function loader({ params }: Route.LoaderArgs) {
@@ -31,7 +31,7 @@ export async function action({ request, params }: Route.ActionArgs) {
   const formData = await request.formData();
 
   const serverValidate = createServerValidate(
-    createEditNoteFormOptions(async ({ value, createErrorMap }) => {
+    createNoteFormOptions(async ({ value, createErrorMap }) => {
       const unique = await isNoteTitleUnique({
         title: value.title,
         username: params.username,
@@ -72,7 +72,7 @@ export default function RouteComponent({
   const { note } = loaderData;
 
   const form = useAppForm({
-    ...createEditNoteFormOptions(),
+    ...createNoteFormOptions(),
     defaultValues: {
       title: note.title,
       content: note.content,

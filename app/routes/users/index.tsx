@@ -1,7 +1,8 @@
 import { href, Link } from "react-router";
-import type { Route } from "./+types/route";
+
 import { prisma } from "@db/prisma";
 import { GeneralErrorBoundary } from "~/components/GeneralErrorBoundary";
+import type { Route } from "./+types/index";
 
 export async function loader() {
   const users = await prisma.user.findMany({

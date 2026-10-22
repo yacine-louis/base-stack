@@ -7,7 +7,7 @@ export async function isNoteTitleUnique({
 }: {
   title: string;
   username: string;
-  noteId: string;
+  noteId?: string;
 }): Promise<boolean> {
   const existing = await prisma.note.findFirst({
     select: { id: true },
