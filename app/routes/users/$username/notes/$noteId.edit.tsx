@@ -1,12 +1,13 @@
 import { prisma } from "@db/prisma";
 import type { Route } from "./+types/$noteId.edit";
 import { invariantResponse } from "~/utils/misc";
-import { data, Form, href, Link, redirect } from "react-router";
+import { data, Form, href, redirect } from "react-router";
 import { GeneralErrorBoundary } from "~/components/GeneralErrorBoundary";
 import { createServerValidate } from "~/utils/form.server";
 import { createNoteFormOptions } from "./+form/config";
 import { isNoteTitleUnique } from "./+form/actions.server";
 import { useAppForm } from "~/components/form/app-form";
+import { BackLink } from "~/components/BackLink";
 
 export async function loader({ params }: Route.LoaderArgs) {
   const note = await prisma.note.findFirst({
@@ -129,15 +130,15 @@ export default function RouteComponent({
             >
               Reset
             </button>
-            <Link
+            <BackLink
               className="border-input bg-background hover:bg-muted rounded-md border px-4 py-2 text-sm font-medium"
-              to={href("/users/:username/notes/:noteId", {
+              fallback={href("/users/:username/notes/:noteId", {
                 username: params.username,
                 noteId: params.noteId,
               })}
             >
               Cancel
-            </Link>
+            </BackLink>
 
             <form.Subscribe
               selector={(state) => [state.canSubmit, state.isSubmitting]}
