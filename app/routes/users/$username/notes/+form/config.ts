@@ -15,12 +15,18 @@ export const NoteFormSchema = z
     title: z
       .string()
       .min(1, titleRequiredMessage)
-      .max(titleMaxLength, titleTooLongMessage),
+      .max(titleMaxLength, titleTooLongMessage)
+      .refine((value) => value !== "t", {
+        message: "Title cannot be 't'",
+      }),
 
     content: z
       .string()
       .min(1, contentRequiredMessage)
-      .max(contentMaxLength, contentTooLongMessage),
+      .max(contentMaxLength, contentTooLongMessage)
+      .refine((value) => value !== "y", {
+        message: "Content cannot be 'y'",
+      }),
   })
   .refine((note) => note.title !== note.content, {
     message: "Title and content must be different", // no `path` -> form-level issue
@@ -37,13 +43,14 @@ export function createNoteFormOptions(
 ) {
   return formOptions({
     defaultValues: noteFormDefaultValues,
+    errorVisibility: ({ fieldState, state }) =>
+      fieldState.meta.isTouched || state.submissionAttempts > 0,
     validators: [
       {
         triggers: ["change", "server"],
         run: async ({ value, parseIssues }) => {
           const result = await NoteFormSchema["~standard"].validate(value);
           if (!result.issues) return undefined;
-
           const parsed = parseIssues(result.issues);
           return {
             ...parsed,

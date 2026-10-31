@@ -58,9 +58,9 @@ export default defineConfig(({ mode }) => {
     resolve: {
       tsconfigPaths: true,
     },
-    build: {
-      minify: false,
-    },
+    // build: {
+    //   minify: false,
+    // },
     define: {},
   };
 });

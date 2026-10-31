@@ -18,8 +18,8 @@ function FieldError(props: FormErrorProps) {
     >
       {errors.length > 0 && (
         <ul className="m-0 ml-4 flex list-none flex-col gap-1">
-          {errors.map((error, i) => (
-            <li key={`${i}-${error.message}`}>{error.message}</li>
+          {errors.map((error) => (
+            <li key={`${error.message}`}>{error.message}</li>
           ))}
         </ul>
       )}

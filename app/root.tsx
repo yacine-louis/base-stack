@@ -10,7 +10,7 @@ import {
 
 import type { Route } from "./+types/root";
 import "./styles/app.css";
-import fontStyleSheetUrl from "./styles/font.css?url&no-inline";
+import "./styles/font.css";
 import React from "react";
 import { useRefetchOnWindowFocus } from "./hooks/useOnWindowFocus";
 import { GeneralErrorBoundary } from "./components/GeneralErrorBoundary";
@@ -21,12 +21,6 @@ export const links: Route.LinksFunction = () => [
   { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
   { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
   { rel: "manifest", href: "/manifest.webmanifest" },
-
-  // fonts
-  {
-    rel: "stylesheet",
-    href: fontStyleSheetUrl,
-  },
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {

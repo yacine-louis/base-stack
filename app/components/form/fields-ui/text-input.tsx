@@ -1,20 +1,35 @@
 import type { FieldWithValue } from "@tanstack/react-form";
-import type { ComponentProps } from "react";
+import { useRef, type ComponentProps } from "react";
 import { fieldComponent } from "../field-brand";
 import { getErrorId } from "../utils";
+import { useIsoLayoutEffect } from "~/hooks/useIsoLayoutEffect ";
+import { useMergedRefs } from "~/hooks/useMergeRefs";
 
 interface FormTextInputProps extends ComponentProps<"input"> {
   field: FieldWithValue<string>;
 }
 
 function FormTextInput(props: FormTextInputProps) {
-  const { field, ...inputProps } = props;
+  const { field, ref: externalRef, ...inputProps } = props;
+  const ref = useRef<HTMLInputElement>(null);
   const isInvalid = field.meta.isInvalid;
+
+  const setRef = useMergedRefs(externalRef, ref);
+  // sync dom values on mount
+  useIsoLayoutEffect(() => {
+    const el = ref.current;
+    if (el && el.value !== field.value) {
+      field.handleChange(el.value);
+    }
+    // mount only
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <input
       // That ensures callers cannot accidentally override the properties that keep the input connected to TanStack Form
       {...inputProps}
+      ref={setRef}
       type="text"
       id={field.name}
       name={field.name}
